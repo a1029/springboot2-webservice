@@ -1,5 +1,5 @@
 
-name: CI
+name: springboot2-webservice CI/CD
 
 on:
   push:
@@ -31,6 +31,9 @@ jobs:
       - name: Copy Jar
         run: cp ./build/libs/*.jar ./deploy
 
+      - name: Copy appspec
+        run: cp appspec.yml ./deploy
+
       - name: Make zip file
         run: zip -r ./springboot2-webservice.zip ./deploy
 
@@ -43,3 +46,15 @@ jobs:
 
       - name: Upload to S3
         run: aws s3 cp --region ap-northeast-2 --acl private ./springboot2-webservice.zip s3://springboot2-build
+
+      - name: Deploy
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_KEY }}
+        run: |
+          aws deploy create-deployment \
+          --application-name springboot2-webservice \
+          --deployment-group-name springboot2-webservice-group \
+          --file-exists-behavior OVERWRITE \
+          --s3-location bucket=springboot2-build,bundleType=zip,key=springboot2-webservice.zip
+          --region ap-northeast-2
