@@ -56,5 +56,5 @@ jobs:
           --application-name springboot2-webservice \
           --deployment-group-name springboot2-webservice-group \
           --file-exists-behavior OVERWRITE \
-          --s3-location bucket=springboot2-build,bundleType=zip,key=springboot2-webservice.zip
+          --s3-location bucket=springboot2-build,bundleType=zip,key=springboot2-webservice.zip \
           --region ap-northeast-2
