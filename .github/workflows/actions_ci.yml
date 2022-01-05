@@ -25,3 +25,21 @@ jobs:
           chmod +x gradlew
           ./gradlew clean build
 
+      - name: Make directory
+        run: mkdir -p deploy
+
+      - name: Copy Jar
+        run: cp ./build/libs/*.jar ./deploy
+
+      - name: Make zip file
+        run: zip -r ./springboot2-webservice.zip ./deploy
+
+      - name: S3 authenticaion configure
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_KEY }}
+          aws-region: ap-northease-2
+
+      - name: Upload to S3
+        run: aws s3 cp --region ap-northease-2 --acl private ./springboot2-webservice.zip s3://springboot2-build
